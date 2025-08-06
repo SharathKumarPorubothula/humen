@@ -79,19 +79,25 @@ export const active_members = async (req, res) => {
 
 export const book_availability = async (req, res) => {
   try {
-    const totalBooks = await Book.countDocuments();
-    const borrowedBooks = await Borrow.countDocuments({ status: "Borrowed" });
-    const availableBooks = totalBooks - borrowedBooks;
-
+    const [totalBooks, borrowedBooks] = await Promise.all([
+      Book.estimatedDocumentCount(),
+      Borrow.countDocuments({ status: "Borrowed" })
+    ]);
+    
     res.status(200).json({
       success: true,
       summary: {
         totalBooks,
         borrowedBooks,
-        availableBooks
+        availableBooks: totalBooks - borrowedBooks
       }
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error", error: error.message });
+    console.error('Availability Error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Database operation failed",
+      error: error.message 
+    });
   }
 };
