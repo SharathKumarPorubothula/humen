@@ -1,137 +1,118 @@
-1️⃣ Authentication
+render url : https://humen-1.onrender.com
+
+Test REST API Endpoints
+🔹 Authentication
 Register
-POST /api/auth/register
-Registers a new user (Admin or Member).
-Request Body:
+bash
+Copy
+Edit
+POST http://localhost:3000/api/auth/register
+Body → raw → JSON
 {
-  "name": "Admin User",
-  "email": "admin@example.com",
+  "name": "John Doe",
+  "email": "john@example.com",
   "password": "123456",
-  "role": "Admin"
+  "role": "Member"
 }
 
----------------------------------------------------------------------------------------------------------
-
+_______________________________________________
 Login
-POST /api/auth/login
-Logs in a user and returns a JWT token.
-
-Request Body:
+POST http://localhost:3000/api/auth/login
+Body → raw → JSON
 {
-  "email": "admin@example.com",
+  "email": "john@example.com",
   "password": "123456"
 }
 
-Response Example:
+Response Example
 {
   "success": true,
+  "message": "Login successful",
   "token": "JWT_TOKEN_HERE",
   "user": {
-    "id": "USER_ID",
-    "name": "Admin User",
-    "role": "Admin"
+    "id": "123",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "Member"
   }
 }
------------------------------------------------------------------------------------------
-2️⃣ Book Management (Admin Only)
+________________________________________________________
+
+🔹 Books (Admin Only)
 Add Book
-POST /api/books
-Headers:
-Authorization: Bearer <token>
-Request Body:
+POST http://localhost:3000/api/books
+Headers
+Authorization: Bearer JWT_TOKEN_HERE
+Body → raw → JSON
 {
   "title": "Atomic Habits",
   "author": "James Clear",
-  "ISBN": "1234567890",
+  "ISBN": "123456789",
   "publicationDate": "2021-05-01",
   "genre": "Self-help",
-  "copies": 3
-}
-
-
-List Books
-GET /api/books
-
-GET /api/books?page=1&limit=5&genre=Self-help
---------------------------------------
-Update Book
-PUT /api/books/:id
-Headers:
-Authorization: Bearer <token>
-Request Body:
-{
   "copies": 5
 }
---------------------------------------
+_______________________________________________________
+Update Book
+PUT http://localhost:3000/api/books/BOOK_ID
+Headers
+Authorization: Bearer JWT_TOKEN_HERE
+Body
+{
+  "copies": 10
+}
+
+______________________________________________________
 Delete Book
-DELETE /api/books/:id
-Headers:
-Authorization: Bearer <token>
+DELETE http://localhost:3000/api/books/BOOK_ID
+Headers
+Authorization: Bearer JWT_TOKEN_HERE
 
-----------------------------------------
-3️⃣ Borrowing System (Member Only)
+______________________________________________________
+List Books
+GET http://localhost:3000/api/books?page=1&limit=10
+🔹 Borrowing System (Member Only)
 Borrow Book
-POST /api/borrow/:bookId
-Borrows a book if copies > 0.
-Headers:
-Authorization: Bearer <token>
---------------------------------------
+POST http://localhost:3000/api/borrow/BOOK_ID
+Headers
+Authorization: Bearer JWT_TOKEN_HERE
+_____________________________________________________
 Return Book
-POST /api/borrow/return/:borrowId
-
--------------------------------------
-Returns a borrowed book.
-Headers:
-Authorization: Bearer <token>
+POST http://localhost:3000/api/borrow/return/BORROW_ID
+Headers
+Authorization: Bearer JWT_TOKEN_HERE
+_____________________________________________________
 Borrow History
-GET /api/borrow/history
-----------------------------------------
-Retrieves logged-in member’s borrowing history.
-Headers:
-Authorization: Bearer <token>
-4️⃣ Reports (Admin Only)
+GET http://localhost:3000/api/borrow/history
+Headers
+Authorization: Bearer JWT_TOKEN_HERE
+____________________________________________________
+🔹 Reports (Admin Only)
 Most Borrowed Books
-GET /api/reports/most-borrowed-books
-Lists top 5 most borrowed books.
-
-Headers:
-Authorization: Bearer <token>
+GET http://localhost:3000/api/reports/most-borrowed-books
+_____________________________________________________
 Active Members
-GET /api/reports/active-members
-Lists top 5 members who borrowed the most books.
+GET http://localhost:3000/api/reports/active-members
+______________________________________________________
 
-Headers:
-Authorization: Bearer <token>
 Book Availability
-GET /api/reports/book-availability
-Returns summary of total, borrowed, and available books.
-Authorization: Bearer <token>
-5️⃣ GraphQL API
-POST /graphql
-Example Query:
+GET http://localhost:3000/api/reports/book-availability
 
-json
-Copy
-Edit
+________________________________________________________
+3️⃣ Test GraphQL API
+Open Postman → Create a new request:
+POST http://localhost:3000/graphql
+Headers
+Authorization: Bearer JWT_TOKEN_HERE
+Content-Type: application/json
+Body → raw → JSON
+Example Query:
 {
   "query": "{ mostBorrowedBooks { title author borrowCount } }"
 }
-Example Response:
 
-json
-Copy
-Edit
+
+Example Mutation (Borrow Book):
 {
-  "data": {
-    "mostBorrowedBooks": [
-      { "title": "Atomic Habits", "author": "James Clear", "borrowCount": 5 },
-      { "title": "Deep Work", "author": "Cal Newport", "borrowCount": 3 }
-    ]
-  }
+  "query": "mutation { borrowBook(bookId: \"BOOK_ID\") { id status borrowDate } }"
 }
-Authentication Notes
-Use the Login API to get a JWT token.
-
-Pass the token in Authorization header for protected routes:
-
-Authorization: Bearer <your_token_here>
