@@ -3,10 +3,7 @@ render url : https://humen-1.onrender.com
 Test REST API Endpoints
 🔹 Authentication
 Register
-bash
-Copy
-Edit
-POST http://localhost:3000/api/auth/register
+POST https://humen-1.onrender.com/api/auth/register
 Body → raw → JSON
 {
   "name": "John Doe",
@@ -17,7 +14,7 @@ Body → raw → JSON
 
 _______________________________________________
 Login
-POST http://localhost:3000/api/auth/login
+POST https://humen-1.onrender.com/api/auth/login
 Body → raw → JSON
 {
   "email": "john@example.com",
@@ -40,7 +37,7 @@ ________________________________________________________
 
 🔹 Books (Admin Only)
 Add Book
-POST http://localhost:3000/api/books
+POST https://humen-1.onrender.com/api/books
 Headers
 Authorization: Bearer JWT_TOKEN_HERE
 Body → raw → JSON
@@ -54,7 +51,7 @@ Body → raw → JSON
 }
 _______________________________________________________
 Update Book
-PUT http://localhost:3000/api/books/BOOK_ID
+PUT https://humen-1.onrender.com/api/books/BOOK_ID
 Headers
 Authorization: Bearer JWT_TOKEN_HERE
 Body
@@ -64,39 +61,39 @@ Body
 
 ______________________________________________________
 Delete Book
-DELETE http://localhost:3000/api/books/BOOK_ID
+DELETE https://humen-1.onrender.com/api/books/BOOK_ID
 Headers
 Authorization: Bearer JWT_TOKEN_HERE
 
 ______________________________________________________
 List Books
-GET http://localhost:3000/api/books?page=1&limit=10
+GET https://humen-1.onrender.com/api/books?page=1&limit=10
 🔹 Borrowing System (Member Only)
 Borrow Book
-POST http://localhost:3000/api/borrow/BOOK_ID
+POST https://humen-1.onrender.com/api/borrow/BOOK_ID
 Headers
 Authorization: Bearer JWT_TOKEN_HERE
 _____________________________________________________
 Return Book
-POST http://localhost:3000/api/borrow/return/BORROW_ID
+POST https://humen-1.onrender.com/api/borrow/return/BORROW_ID
 Headers
 Authorization: Bearer JWT_TOKEN_HERE
 _____________________________________________________
 Borrow History
-GET http://localhost:3000/api/borrow/history
+GET https://humen-1.onrender.com/api/borrow/history
 Headers
 Authorization: Bearer JWT_TOKEN_HERE
 ____________________________________________________
 🔹 Reports (Admin Only)
 Most Borrowed Books
-GET http://localhost:3000/api/reports/most-borrowed-books
+GET https://humen-1.onrender.com/api/reports/most-borrowed-books
 _____________________________________________________
 Active Members
-GET http://localhost:3000/api/reports/active-members
+GET https://humen-1.onrender.com/api/reports/active-members
 ______________________________________________________
 
 Book Availability
-GET http://localhost:3000/api/reports/book-availability
+GET https://humen-1.onrender.com/api/reports/book-availability
 
 ________________________________________________________
 3️⃣ Test GraphQL API
