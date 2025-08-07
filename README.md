@@ -56,7 +56,12 @@ Headers
 Authorization: Bearer JWT_TOKEN_HERE
 Body
 {
-  "copies": 10
+  "title": "Think like monk",
+  "author": "James Clear",
+  "ISBN": "123456788",
+  "publicationDate": "2021-05-01",
+  "genre": "Self-help",
+  "copies": 5
 }
 
 ______________________________________________________
