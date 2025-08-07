@@ -103,13 +103,45 @@ Headers
 Authorization: Bearer JWT_TOKEN_HERE
 Content-Type: application/json
 Body → raw → JSON
-Example Query:
+
+
+✅ GraphQL Query for Registration:
 {
-  "query": "{ mostBorrowedBooks { title author borrowCount } }"
+  "query": "mutation { register(name: \"Sharath\", email: \"sharath@example.com\", password: \"123456\", role: \"Admin\") { id name email role } }"
 }
 
 
-Example Mutation (Borrow Book):
+✅ GraphQL Query for Login:
 {
-  "query": "mutation { borrowBook(bookId: \"BOOK_ID\") { id status borrowDate } }"
+  "query": "mutation { login(email: \"sharath@example.com\", password: \"123456\") }"
 }
+It returns the JWT token as a string.
+
+
+
+✅ Other Working Queries from Your Schema:
+1. Get All Books:
+{
+  "query": "{ books { id title author ISBN genre copies } }"
+}
+
+
+2. Get Single Book by ID:
+{
+  "query": "{ book(id: \"BOOK_ID_HERE\") { title author } }"
+}
+
+
+3. Get Current User Info (me):
+{
+  "query": "{ me { id name email role } }"
+}
+
+Note: This requires sending the token in headers:
+-------------------------------------------------
+Authorization: Bearer <JWT_TOKEN>
+
+{
+  "query": "mutation { addBook(title: \"1984\", author: \"George Orwell\", ISBN: \"1234567890\", genre: \"Dystopian\", copies: 10, publicationDate: \"1949-06-08\") { id title publicationDate } }"
+}
+
