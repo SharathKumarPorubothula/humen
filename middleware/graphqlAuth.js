@@ -4,12 +4,11 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const graphqlAuth = async (req) => {
+const graphqlAuth = async (req) => {
   let token;
-
   if (
     req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
+    req.headers.authorization.startsWith("Bearer ")
   ) {
     try {
       token = req.headers.authorization.split(" ")[1];
@@ -17,9 +16,11 @@ export const graphqlAuth = async (req) => {
       const user = await User.findById(decoded.id).select("-password");
       return user;
     } catch (error) {
+      console.log("Invalid token", error);
       return null;
     }
   }
-
   return null;
 };
+
+export default graphqlAuth;

@@ -1,40 +1,44 @@
 import Borrow from "../model/borrowingSchema.js";
 import Book from "../model/bookSchema.js";
 
-
- //Borrow a book
-
 export const borrowBook = async (req, res) => {
   try {
     const { bookId } = req.params;
 
     const book = await Book.findById(bookId);
     if (!book) {
-      return res.status(404).json({ success: false, message: "Book not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Book not found" });
     }
 
     if (book.copies <= 0) {
-      return res.status(400).json({ success: false, message: "Book not available" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Book not available" });
     }
 
-    // Reduce available copies
     book.copies -= 1;
     await book.save();
 
-    // Create borrow record
     const borrowRecord = await Borrow.create({
       user: req.user.id,
-      book: bookId
+      book: bookId,
     });
 
-    res.status(201).json({ success: true, message: "Book borrowed successfully", borrowRecord });
+    res
+      .status(201)
+      .json({
+        success: true,
+        message: "Book borrowed successfully",
+        borrowRecord,
+      });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error", error: error.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server Error", error: error.message });
   }
 };
-
-
- //Return a borrowed book
 
 export const returnBook = async (req, res) => {
   try {
@@ -42,11 +46,15 @@ export const returnBook = async (req, res) => {
 
     const borrowRecord = await Borrow.findById(borrowId).populate("book");
     if (!borrowRecord) {
-      return res.status(404).json({ success: false, message: "Borrow record not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Borrow record not found" });
     }
 
     if (borrowRecord.status === "Returned") {
-      return res.status(400).json({ success: false, message: "Book already returned" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Book already returned" });
     }
 
     // Update borrow record
@@ -58,13 +66,19 @@ export const returnBook = async (req, res) => {
     borrowRecord.book.copies += 1;
     await borrowRecord.book.save();
 
-    res.status(200).json({ success: true, message: "Book returned successfully", borrowRecord });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Book returned successfully",
+        borrowRecord,
+      });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error", error: error.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server Error", error: error.message });
   }
 };
-
- // Get user's borrow history
 
 export const borrowHistory = async (req, res) => {
   try {
@@ -74,6 +88,8 @@ export const borrowHistory = async (req, res) => {
 
     res.status(200).json({ success: true, history });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error", error: error.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server Error", error: error.message });
   }
 };

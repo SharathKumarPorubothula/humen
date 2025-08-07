@@ -2,9 +2,6 @@ import Borrow from "../model/borrowingSchema.js";
 import Book from "../model/bookSchema.js";
 import User from "../model/userSchema.js";
 
-
-
-
 export const most_borrowed_books = async (req, res) => {
   try {
     const results = await Borrow.aggregate([
@@ -13,11 +10,11 @@ export const most_borrowed_books = async (req, res) => {
       { $limit: 5 },
       {
         $lookup: {
-          from: "books", // Collection name in MongoDB
+          from: "books",
           localField: "_id",
           foreignField: "_id",
-          as: "bookDetails"
-        }
+          as: "bookDetails",
+        },
       },
       { $unwind: "$bookDetails" },
       {
@@ -26,20 +23,18 @@ export const most_borrowed_books = async (req, res) => {
           bookId: "$bookDetails._id",
           title: "$bookDetails.title",
           author: "$bookDetails.author",
-          borrowCount: 1
-        }
-      }
+          borrowCount: 1,
+        },
+      },
     ]);
 
     res.status(200).json({ success: true, mostBorrowedBooks: results });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error", error: error.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server Error", error: error.message });
   }
 };
-
-
-
-
 
 export const active_members = async (req, res) => {
   try {
@@ -49,11 +44,11 @@ export const active_members = async (req, res) => {
       { $limit: 5 },
       {
         $lookup: {
-          from: "users", // Collection name in MongoDB
+          from: "users",
           localField: "_id",
           foreignField: "_id",
-          as: "userDetails"
-        }
+          as: "userDetails",
+        },
       },
       { $unwind: "$userDetails" },
       {
@@ -62,42 +57,40 @@ export const active_members = async (req, res) => {
           userId: "$userDetails._id",
           name: "$userDetails.name",
           email: "$userDetails.email",
-          borrowCount: 1
-        }
-      }
+          borrowCount: 1,
+        },
+      },
     ]);
 
     res.status(200).json({ success: true, activeMembers: results });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error", error: error.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server Error", error: error.message });
   }
 };
-
-
-
-
 
 export const book_availability = async (req, res) => {
   try {
     const [totalBooks, borrowedBooks] = await Promise.all([
       Book.estimatedDocumentCount(),
-      Borrow.countDocuments({ status: "Borrowed" })
+      Borrow.countDocuments({ status: "Borrowed" }),
     ]);
-    
+
     res.status(200).json({
       success: true,
       summary: {
         totalBooks,
         borrowedBooks,
-        availableBooks: totalBooks - borrowedBooks
-      }
+        availableBooks: totalBooks - borrowedBooks,
+      },
     });
   } catch (error) {
-    console.error('Availability Error:', error);
-    res.status(500).json({ 
-      success: false, 
+    console.error("Availability Error:", error);
+    res.status(500).json({
+      success: false,
       message: "Database operation failed",
-      error: error.message 
+      error: error.message,
     });
   }
 };

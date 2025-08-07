@@ -1,4 +1,12 @@
-import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema, GraphQLList, GraphQLNonNull, GraphQLID } from "graphql";
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLSchema,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLID,
+} from "graphql";
 import User from "../model/userSchema.js";
 import Book from "../model/bookSchema.js";
 import Borrow from "../model/borrowingSchema.js";
@@ -17,8 +25,8 @@ const UserType = new GraphQLObjectType({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
     email: { type: GraphQLString },
-    role: { type: GraphQLString }
-  })
+    role: { type: GraphQLString },
+  }),
 });
 
 /**
@@ -32,8 +40,8 @@ const BookType = new GraphQLObjectType({
     author: { type: GraphQLString },
     ISBN: { type: GraphQLString },
     genre: { type: GraphQLString },
-    copies: { type: GraphQLInt }
-  })
+    copies: { type: GraphQLInt },
+  }),
 });
 
 /**
@@ -47,8 +55,8 @@ const BorrowType = new GraphQLObjectType({
     book: { type: BookType },
     status: { type: GraphQLString },
     borrowDate: { type: GraphQLString },
-    returnDate: { type: GraphQLString }
-  })
+    returnDate: { type: GraphQLString },
+  }),
 });
 
 /**
@@ -62,7 +70,7 @@ const RootQuery = new GraphQLObjectType({
       resolve: async (parent, args, context) => {
         if (!context.user) throw new Error("Unauthorized");
         return Book.find();
-      }
+      },
     },
     book: {
       type: BookType,
@@ -70,16 +78,16 @@ const RootQuery = new GraphQLObjectType({
       resolve: async (parent, args, context) => {
         if (!context.user) throw new Error("Unauthorized");
         return Book.findById(args.id);
-      }
+      },
     },
     me: {
       type: UserType,
       resolve: (parent, args, context) => {
         if (!context.user) throw new Error("Unauthorized");
         return context.user;
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 /**
@@ -95,7 +103,7 @@ const Mutation = new GraphQLObjectType({
         name: { type: new GraphQLNonNull(GraphQLString) },
         email: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) },
-        role: { type: GraphQLString }
+        role: { type: GraphQLString },
       },
       resolve: async (parent, args) => {
         const existing = await User.findOne({ email: args.email });
@@ -106,10 +114,10 @@ const Mutation = new GraphQLObjectType({
           name: args.name,
           email: args.email,
           password: hashedPassword,
-          role: args.role || "Member"
+          role: args.role || "Member",
         });
         return user;
-      }
+      },
     },
 
     // User login
@@ -117,20 +125,26 @@ const Mutation = new GraphQLObjectType({
       type: GraphQLString, // return JWT
       args: {
         email: { type: new GraphQLNonNull(GraphQLString) },
-        password: { type: new GraphQLNonNull(GraphQLString) }
+        password: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: async (parent, args) => {
-        const user = await User.findOne({ email: args.email }).select("+password");
+        const user = await User.findOne({ email: args.email }).select(
+          "+password"
+        );
         if (!user) throw new Error("Invalid credentials");
 
         const isMatch = await bcrypt.compare(args.password, user.password);
         if (!isMatch) throw new Error("Invalid credentials");
 
-        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-          expiresIn: "7d"
-        });
+        const token = jwt.sign(
+          { id: user._id, role: user.role },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: "7d",
+          }
+        );
         return token;
-      }
+      },
     },
 
     // Add book (Admin only)
@@ -141,19 +155,19 @@ const Mutation = new GraphQLObjectType({
         author: { type: new GraphQLNonNull(GraphQLString) },
         ISBN: { type: new GraphQLNonNull(GraphQLString) },
         genre: { type: GraphQLString },
-        copies: { type: GraphQLInt }
+        copies: { type: GraphQLInt },
       },
       resolve: async (parent, args, context) => {
         if (!context.user || context.user.role !== "Admin") {
           throw new Error("Admin access required");
         }
         return Book.create(args);
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 export default new GraphQLSchema({
   query: RootQuery,
-  mutation: Mutation
+  mutation: Mutation,
 });

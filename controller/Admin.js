@@ -1,76 +1,95 @@
 import Book from "../model/bookSchema.js";
 
-
 export const addBook = async (req, res) => {
   try {
     const { title, author, ISBN, publicationDate, genre, copies } = req.body;
 
-    // Validation
-    if (!title || !author || !ISBN || !publicationDate || !genre || copies === undefined) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+    if (
+      !title ||
+      !author ||
+      !ISBN ||
+      !publicationDate ||
+      !genre ||
+      copies === undefined
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
     }
 
-    // Check if book already exists
     const existingBook = await Book.findOne({ ISBN });
     if (existingBook) {
-      return res.status(400).json({ success: false, message: "Book with this ISBN already exists" });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Book with this ISBN already exists",
+        });
     }
 
-    // Create book
     const book = await Book.create({
       title,
       author,
       ISBN,
       publicationDate,
       genre,
-      copies
+      copies,
     });
 
-    res.status(201).json({ success: true, message: "Book added successfully", book });
+    res
+      .status(201)
+      .json({ success: true, message: "Book added successfully", book });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error: error.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
   }
 };
-
-
-
 
 export const updateBook = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Find and update
-    const book = await Book.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    const book = await Book.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
     if (!book) {
-      return res.status(404).json({ success: false, message: "Book not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Book not found" });
     }
 
-    res.status(200).json({ success: true, message: "Book updated successfully", book });
+    res
+      .status(200)
+      .json({ success: true, message: "Book updated successfully", book });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error: error.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
   }
 };
-
-
-
 
 export const deleteBook = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Find and delete
     const book = await Book.findByIdAndDelete(id);
     if (!book) {
-      return res.status(404).json({ success: false, message: "Book not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Book not found" });
     }
 
-    res.status(200).json({ success: true, message: "Book deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Book deleted successfully" });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error: error.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
   }
 };
-
-
 
 export const listBooks = async (req, res) => {
   try {
@@ -92,9 +111,11 @@ export const listBooks = async (req, res) => {
       total,
       page: Number(page),
       pages: Math.ceil(total / limit),
-      books
+      books,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error: error.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
   }
 };

@@ -4,26 +4,26 @@ const borrowSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Reference to User schema
-      required: true
+      ref: "User",
+      required: true,
     },
     book: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Book", // Reference to Book schema
-      required: true
+      ref: "Book",
+      required: true,
     },
     borrowDate: {
       type: Date,
-      default: Date.now
+      default: Date.now,
     },
     returnDate: {
-      type: Date
+      type: Date,
     },
     status: {
       type: String,
       enum: ["Borrowed", "Returned"],
-      default: "Borrowed"
-    }
+      default: "Borrowed",
+    },
   },
   { timestamps: true }
 );
@@ -44,10 +44,10 @@ borrowSchema.statics.getMostBorrowedBooks = function (limit = 5) {
         from: "books",
         localField: "_id",
         foreignField: "_id",
-        as: "bookDetails"
-      }
+        as: "bookDetails",
+      },
     },
-    { $unwind: "$bookDetails" }
+    { $unwind: "$bookDetails" },
   ]);
 };
 
@@ -62,10 +62,10 @@ borrowSchema.statics.getMostActiveMembers = function (limit = 5) {
         from: "users",
         localField: "_id",
         foreignField: "_id",
-        as: "userDetails"
-      }
+        as: "userDetails",
+      },
     },
-    { $unwind: "$userDetails" }
+    { $unwind: "$userDetails" },
   ]);
 };
 
