@@ -103,7 +103,7 @@ GET https://humen-1.onrender.com/api/reports/book-availability
 ________________________________________________________
 3️⃣ Test GraphQL API
 Open Postman → Create a new request:
-POST http://localhost:3000/graphql
+POST https://humen-1.onrender.com/graphql
 Headers
 Authorization: Bearer JWT_TOKEN_HERE
 Content-Type: application/json
