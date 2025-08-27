@@ -217,6 +217,102 @@ deleteBook: {
   },
 },
 
+    //borrow book
+    borrowBook: {
+  type: BorrowType,
+  args: {
+    bookId: { type: new GraphQLNonNull(GraphQLID) },
+  },
+  resolve: async (parent, args, context) => {
+    if (!context.user) throw new Error("Authentication required");
+
+    const book = await Book.findById(args.bookId);
+    if (!book || book.copies <= 0) {
+      throw new Error("Book not available");
+    }
+
+    // Decrease available copies
+    book.copies -= 1;
+    await book.save();
+
+    const borrow = await Borrow.create({
+      user: context.user.id,
+      book: args.bookId,
+      status: "Borrowed",
+      borrowDate: new Date(),
+    });
+
+    return borrow;
+  },
+},
+
+    //Return a Book
+    returnBook: {
+  type: BorrowType,
+  args: {
+    borrowId: { type: new GraphQLNonNull(GraphQLID) },
+  },
+  resolve: async (parent, args, context) => {
+    if (!context.user) throw new Error("Authentication required");
+
+    const borrow = await Borrow.findById(args.borrowId).populate("book");
+    if (!borrow) throw new Error("Borrow record not found");
+    if (borrow.status === "Returned") throw new Error("Book already returned");
+
+    // Update book copies
+    const book = await Book.findById(borrow.book.id);
+    book.copies += 1;
+    await book.save();
+
+    // Update borrow record
+    borrow.status = "Returned";
+    borrow.returnDate = new Date();
+    await borrow.save();
+
+    return borrow;
+  },
+},
+
+
+    //Borrow History
+    borrowHistory: {
+  type: new GraphQLList(BorrowType),
+  resolve: async (parent, args, context) => {
+    if (!context.user) throw new Error("Unauthorized");
+
+    // Admin can see all, user sees their own
+    if (context.user.role === "Admin") {
+      return Borrow.find().populate("user").populate("book");
+    } else {
+      return Borrow.find({ user: context.user.id }).populate("book");
+    }
+  },
+},
+
+    //Reports (Admin Only)
+    reports: {
+  type: new GraphQLObjectType({
+    name: "Report",
+    fields: {
+      totalBooks: { type: GraphQLInt },
+      totalBorrows: { type: GraphQLInt },
+      activeMembers: { type: GraphQLInt },
+    },
+  }),
+  resolve: async (parent, args, context) => {
+    if (!context.user || context.user.role !== "Admin") {
+      throw new Error("Admin access required");
+    }
+
+    const totalBooks = await Book.countDocuments();
+    const totalBorrows = await Borrow.countDocuments();
+    const activeMembers = await User.countDocuments({ role: "Member" });
+
+    return { totalBooks, totalBorrows, activeMembers };
+  },
+},
+
+
     
   },
 });
