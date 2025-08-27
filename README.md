@@ -101,6 +101,10 @@ Book Availability
 GET https://humen-1.onrender.com/api/reports/book-availability
 
 ________________________________________________________
+
+
+
+
 3️⃣ Test GraphQL API
 Open Postman → Create a new request:
 POST https://humen-1.onrender.com/graphql
@@ -115,6 +119,23 @@ Body → raw → JSON
   "query": "mutation { register(name: \"Sharath\", email: \"sharath@example.com\", password: \"123456\", role: \"Admin\") { id name email role } }"
 }
 
+or
+
+mutation {
+  register(
+    name: "John"
+    email: "john12@example.com"
+    password: "123456"
+    role: "Member"
+  ) {
+    id
+    name
+    email
+    role
+  }
+}
+
+
 
 ✅ GraphQL Query for Login:
 {
@@ -122,12 +143,30 @@ Body → raw → JSON
 }
 It returns the JWT token as a string.
 
+or
 
+mutation {
+  login(email: "sharath@example.com", password: "123456")
+}
+
+token: authorization Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTMwNDlmNmM0ZTljZmY0MjgwODZjMSIsInJvbGUiOiJBZG1pbiIsImlhdCI6MTc1NjI5Mjc0MiwiZXhwIjoxNzU2ODk3NTQyfQ.caroYiv3UINxDPXxvCLAVTrg1Ft0PyOYnqpx__sw79U
 
 ✅ Other Working Queries from Your Schema:
 1. Get All Books:
 {
   "query": "{ books { id title author ISBN genre copies } }"
+}
+
+or 
+{
+  books {
+    id
+    title
+    author
+    ISBN
+    genre
+    copies
+  }
 }
 
 
@@ -136,10 +175,124 @@ It returns the JWT token as a string.
   "query": "{ book(id: \"BOOK_ID_HERE\") { title author } }"
 }
 
+or 
+{
+  book(id: "6892419f701ee870b54aeef8") {
+    title
+    author
+  }
+}
+
+3. Add Book
+   ISBN number should be unique for every new book
+
+   mutation {
+  addBook(
+    title: "Atomic Habits",
+    author: "James Clear",
+    ISBN: "123456710",
+    genre: "Self-help",
+    copies: 5
+  ) {
+    id
+    title
+    author
+    ISBN
+    genre
+    copies
+  }
+}
+
+4.Update the Book
+mutation {
+  updateBook(
+    id: "68aef06e5e03d4d2c922f031"
+    title: "Think Like Monk"
+    author: "Jay Shetty"
+    ISBN: "123456788"
+    genre: "Self-help"
+    copies: 5
+  ) {
+    id
+    title
+    author
+    ISBN
+    genre
+    copies
+  }
+}
+
 
 3. Get Current User Info (me):
 {
   "query": "{ me { id name email role } }"
+}
+
+or 
+
+{
+  me {
+    id
+    name
+    email
+    role
+  }
+}
+
+4. Delete Book
+   mutation {
+  deleteBook(id: "68aef06e5e03d4d2c922f031") {
+    id
+    title
+    author
+  }
+}
+
+5.Borrow Book
+mutation {
+  borrowBook(bookId: "6892419f701ee870b54aeef8") {
+    id
+    status
+    borrowDate
+    book { title }
+  }
+}
+
+6.Return book
+mutation {
+  returnBook(borrowId: "68aef547531261fdb2751c72") {
+    id
+    status
+    returnDate
+    book { title }
+  }
+}
+
+7.Reports
+query {
+  reports {
+    totalBooks
+    totalBorrows
+    activeMembers
+  }
+}
+
+
+8. Active members
+   query {
+  reports {
+    activeMembers
+  }
+}
+
+9.Book Availability
+query {
+  reports {
+    totalBooks
+    totalBorrows
+    activeMembers
+    # Note: book availability (availableBooks) isn't part of the schema yet
+  }
 }
 
 Note: This requires sending the token in headers:
