@@ -196,6 +196,28 @@ updateBook: {
   },
 },
 
+    //delete
+deleteBook: {
+  type: BookType,
+  args: {
+    id: { type: new GraphQLNonNull(GraphQLID) },
+  },
+  resolve: async (parent, args, context) => {
+    if (!context.user || context.user.role !== "Admin") {
+      throw new Error("Admin access required");
+    }
+
+    const deletedBook = await Book.findByIdAndDelete(args.id);
+
+    if (!deletedBook) {
+      throw new Error("Book not found");
+    }
+
+    return deletedBook;
+  },
+},
+
+    
   },
 });
 
