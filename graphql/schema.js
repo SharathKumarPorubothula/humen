@@ -87,6 +87,45 @@ const RootQuery = new GraphQLObjectType({
         return context.user;
       },
     },
+
+    
+    //Borrow History
+    borrowHistory: {
+  type: new GraphQLList(BorrowType),
+  resolve: async (parent, args, context) => {
+    if (!context.user) throw new Error("Unauthorized");
+
+    // Admin can see all, user sees their own
+    if (context.user.role === "Admin") {
+      return Borrow.find().populate("user").populate("book");
+    } else {
+      return Borrow.find({ user: context.user.id }).populate("book");
+    }
+  },
+},
+
+    //Reports (Admin Only)
+    reports: {
+  type: new GraphQLObjectType({
+    name: "Report",
+    fields: {
+      totalBooks: { type: GraphQLInt },
+      totalBorrows: { type: GraphQLInt },
+      activeMembers: { type: GraphQLInt },
+    },
+  }),
+  resolve: async (parent, args, context) => {
+    if (!context.user || context.user.role !== "Admin") {
+      throw new Error("Admin access required");
+    }
+
+    const totalBooks = await Book.countDocuments();
+    const totalBorrows = await Borrow.countDocuments();
+    const activeMembers = await User.countDocuments({ role: "Member" });
+
+    return { totalBooks, totalBorrows, activeMembers };
+  },
+},
   },
 });
 
@@ -273,44 +312,6 @@ deleteBook: {
   },
 },
 
-
-    //Borrow History
-    borrowHistory: {
-  type: new GraphQLList(BorrowType),
-  resolve: async (parent, args, context) => {
-    if (!context.user) throw new Error("Unauthorized");
-
-    // Admin can see all, user sees their own
-    if (context.user.role === "Admin") {
-      return Borrow.find().populate("user").populate("book");
-    } else {
-      return Borrow.find({ user: context.user.id }).populate("book");
-    }
-  },
-},
-
-    //Reports (Admin Only)
-    reports: {
-  type: new GraphQLObjectType({
-    name: "Report",
-    fields: {
-      totalBooks: { type: GraphQLInt },
-      totalBorrows: { type: GraphQLInt },
-      activeMembers: { type: GraphQLInt },
-    },
-  }),
-  resolve: async (parent, args, context) => {
-    if (!context.user || context.user.role !== "Admin") {
-      throw new Error("Admin access required");
-    }
-
-    const totalBooks = await Book.countDocuments();
-    const totalBorrows = await Borrow.countDocuments();
-    const activeMembers = await User.countDocuments({ role: "Member" });
-
-    return { totalBooks, totalBorrows, activeMembers };
-  },
-},
 
 
     
