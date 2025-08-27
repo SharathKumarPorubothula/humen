@@ -164,6 +164,38 @@ const Mutation = new GraphQLObjectType({
         return Book.create(args);
       },
     },
+
+    //Update book
+    // Inside Mutation
+updateBook: {
+  type: BookType,
+  args: {
+    id: { type: new GraphQLNonNull(GraphQLID) },
+    title: { type: GraphQLString },
+    author: { type: GraphQLString },
+    ISBN: { type: GraphQLString },
+    genre: { type: GraphQLString },
+    copies: { type: GraphQLInt },
+  },
+  resolve: async (parent, args, context) => {
+    if (!context.user || context.user.role !== "Admin") {
+      throw new Error("Admin access required");
+    }
+
+    const updatedBook = await Book.findByIdAndUpdate(
+      args.id,
+      { $set: { ...args } },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedBook) {
+      throw new Error("Book not found");
+    }
+
+    return updatedBook;
+  },
+},
+
   },
 });
 
