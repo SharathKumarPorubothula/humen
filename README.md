@@ -135,6 +135,7 @@ mutation {
   }
 }
 
+________________________________________________________________________________
 
 
 ✅ GraphQL Query for Login:
@@ -150,6 +151,9 @@ mutation {
 }
 
 token: authorization Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OTMwNDlmNmM0ZTljZmY0MjgwODZjMSIsInJvbGUiOiJBZG1pbiIsImlhdCI6MTc1NjI5Mjc0MiwiZXhwIjoxNzU2ODk3NTQyfQ.caroYiv3UINxDPXxvCLAVTrg1Ft0PyOYnqpx__sw79U
+
+
+___________________________________________________________________________
 
 ✅ Other Working Queries from Your Schema:
 1. Get All Books:
@@ -169,6 +173,7 @@ or
   }
 }
 
+__________________________________________________________________________
 
 2. Get Single Book by ID:
 {
@@ -182,6 +187,8 @@ or
     author
   }
 }
+
+_____________________________________________________________________________
 
 3. Add Book
    ISBN number should be unique for every new book
@@ -203,6 +210,8 @@ or
   }
 }
 
+___________________________________________________________________________
+
 4.Update the Book
 mutation {
   updateBook(
@@ -222,6 +231,7 @@ mutation {
   }
 }
 
+___________________________________________________________________________
 
 3. Get Current User Info (me):
 {
@@ -239,6 +249,8 @@ or
   }
 }
 
+_______________________________________________________________________
+
 4. Delete Book
    mutation {
   deleteBook(id: "68aef06e5e03d4d2c922f031") {
@@ -247,6 +259,8 @@ or
     author
   }
 }
+
+___________________________________________________________________
 
 5.Borrow Book
 mutation {
@@ -258,6 +272,8 @@ mutation {
   }
 }
 
+___________________________________________________________________
+
 6.Return book
 mutation {
   returnBook(borrowId: "68aef547531261fdb2751c72") {
@@ -268,6 +284,8 @@ mutation {
   }
 }
 
+_________________________________________________________________
+
 7.Reports
 query {
   reports {
@@ -277,6 +295,7 @@ query {
   }
 }
 
+_______________________________________________________________
 
 8. Active members
    query {
@@ -284,6 +303,8 @@ query {
     activeMembers
   }
 }
+
+________________________________________________________________
 
 9.Book Availability
 query {
@@ -297,9 +318,7 @@ query {
 
 Note: This requires sending the token in headers:
 -------------------------------------------------
-Authorization: Bearer <JWT_TOKEN>
 
-{
-  "query": "mutation { addBook(title: \"1984\", author: \"George Orwell\", ISBN: \"1234567890\", genre: \"Dystopian\", copies: 10, publicationDate: \"1949-06-08\") { id title publicationDate } }"
-}
+
+
 
